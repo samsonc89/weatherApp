@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="main-wrapper">
+      <div class="today-wrapper">
+        <div class="search-area">
+          <input
+            type="text"
+            id="city-search"
+            placeholder="Search by Name or Zipcode"
+          />
+          <button id="search-btn">Search</button>
+        </div>
+        <div class="city-wrapper">
+          <h2 id="city-name">Redwood City, CA</h2>
+          <h4 id="current-time">Tuesday Jan 10 10:47Am</h4>
+        </div>
+        <div class="info-wrapper">
+          <div class="temp-display">
+            <div class="temp">
+              <span id="temp-number">52</span>
+              <span id="temp-unit">°F</span>
+            </div>
+            <div class="high-low-wrapper">
+              <span id="high-temp"></span><span id="low-temp"></span>
+            </div>
+            <div class="temp-toggle"></div>
+          </div>
+          <div class="weather-icon-display">
+            <div class="icon-display"></div>
+            <div class="weather-description"></div>
+          </div>
+        </div>
+        <div class="gif-wrapper">
+          <img src="" alt="" />
+        </div>
+      </div>
+      <div class="details-wrapper">
+        <div class="hourly-forecast"></div>
+        <div class="week-forecast"></div>
+        <div class="details"></div>
+      </div>
+    </div>
+  </body>
+</html>
