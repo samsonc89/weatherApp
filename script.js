@@ -47,7 +47,10 @@ async function getWeatherData() {
 
 async function updateWeather() {
   const data = await getWeatherData();
-  tempNumber.textContent = data.main.temp;
+  console.log(data.main.temp * (9 / 5) - 459.67);
+  tempNumber.textContent = Math.round(data.main.temp * (9 / 5) - 459.67);
+  highTemp.textContent = Math.round(data.main.temp_max * (9 / 5) - 459.67);
+  lowTemp.textContent = Math.round(data.main.temp_min * (9 / 5) - 459.67);
 }
 /*http://api.openweathermap.org/geo/1.0/direct?q=
 {city name},{state code},{country code}&limit={limit}&appid={API key}
