@@ -7,12 +7,13 @@ const currentTime = document.querySelector("#current-time");
 const tempNumber = document.querySelector("#temp-number");
 const highTemp = document.querySelector("#high-temp");
 const lowTemp = document.querySelector("#low-temp");
+const weatherDescription = document.querySelector("#weather-description");
 const APIkey = "5943b09bd72402e9560b276898d410f0";
 
 //When search button is clicked
 
 searchBtn.addEventListener("click", () => {
-  updateWeather();
+  updateWeatherDisplay();
 });
 
 searchInput.value = "Oakland";
@@ -41,13 +42,20 @@ async function getWeatherData() {
 
   const data = await response.json();
   console.log(data);
-  console.log(data.timezone);
   return data;
 }
 
-async function updateWeather() {
+async function updateWeatherDisplay() {
   const data = await getWeatherData();
-  console.log(data.main.temp * (9 / 5) - 459.67);
+
+  cityName.textContent = data.name; //change to user input
+
+  //Capitalize first letter of the description
+  let weatherName =
+    data.weather[0].description.charAt(0).toUpperCase() +
+    data.weather[0].description.substring(1);
+
+  weatherDescription.textContent = weatherName;
   tempNumber.textContent = Math.round(data.main.temp * (9 / 5) - 459.67);
   highTemp.textContent = Math.round(data.main.temp_max * (9 / 5) - 459.67);
   lowTemp.textContent = Math.round(data.main.temp_min * (9 / 5) - 459.67);
