@@ -8,6 +8,12 @@ const tempNumber = document.querySelector("#temp-number");
 const highTemp = document.querySelector("#high-temp");
 const lowTemp = document.querySelector("#low-temp");
 const iconImage = document.querySelector("#icon-image");
+const windSpeed = document.querySelector("#windspeed-text");
+const feelsLike = document.querySelector("#feels-like-text");
+const uvi = document.querySelector("#uvi-text");
+const humidity = document.querySelector("#humidity-text");
+const sunrise = document.querySelector("#sunrise-text");
+const sunset = document.querySelector("#sunset-text");
 const weatherDescription = document.querySelector("#weather-description");
 const APIkey = "5943b09bd72402e9560b276898d410f0";
 
@@ -52,19 +58,15 @@ async function getCurrentWeatherData() {
   return data;
 }
 
-async function updateWeatherDetails(data) {
-  let newData = {
-    sunrise: data.sunrise,
-    sunset: data.sunset,
-    feels_like: data.feels_like,
-    wind_speed: data.wind_speed,
-    wind_deg: data.wind_deg,
-    humidity: data.humidity,
-    uvi: data.uvi,
-  };
+ function updateWeatherDetails(data) {
 
-  console.log(newData);
-  return newData;
+    sunrise.textContent = data.sunrise;
+    sunset.textContent = data.sunset;
+    feelsLike.textContent = data.feels_like;
+    windSpeed.textContent = data.wind_speed;
+    // wind_deg= data.wind_deg;
+    humidity.textContent = data.humidity;
+    uvi.textContent = data.uvi;
 }
 
 async function updateCurrentWeatherDisplay() {
