@@ -58,15 +58,22 @@ async function getCurrentWeatherData() {
   return data;
 }
 
- function updateWeatherDetails(data) {
+function convertTime(time) {
+  let date = new Date(time * 1000);
+  return date.toLocaleTimeString(navigator.language, {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
-    sunrise.textContent = data.sunrise;
-    sunset.textContent = data.sunset;
-    feelsLike.textContent = data.feels_like;
-    windSpeed.textContent = data.wind_speed;
-    // wind_deg= data.wind_deg;
-    humidity.textContent = data.humidity;
-    uvi.textContent = data.uvi;
+function updateWeatherDetails(data) {
+  sunrise.textContent = convertTime(data.sunrise);
+  sunset.textContent = convertTime(data.sunset);
+  feelsLike.textContent = data.feels_like;
+  windSpeed.textContent = data.wind_speed;
+  // wind_deg= data.wind_deg;
+  humidity.textContent = data.humidity;
+  uvi.textContent = data.uvi;
 }
 
 async function updateCurrentWeatherDisplay() {
