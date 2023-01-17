@@ -20,7 +20,7 @@ const APIkey = "5943b09bd72402e9560b276898d410f0";
 //When search button is clicked
 
 searchBtn.addEventListener("click", () => {
-  updateCurrentWeatherDisplay();
+  sortWeatherData();
 });
 
 searchInput.value = "Oakland";
@@ -62,30 +62,26 @@ async function getAllWeatherData() {
   return data;
 }
 
-async function getCurrentWeatherData() {
+async function sortWeatherData() {
   const response = await getAllWeatherData();
-  const data = await response.current;
-  console.log(data);
-  return data;
+  const currentWeather = response.current;
+  const dailyForecast = response.daily;
+  const hourlyForecast = response.hourly;
+  const currentData = { currentWeather, dailyForecast, hourlyForecast };
+  return updateCurrentWeatherDisplay(currentData);
 }
 
-async function getHighsAndLows() {
+async function getHighsAndLows(data) {
   const response = await getAllWeatherData();
-  const data = await response.daily;
-  const temps = {
-    highs: [],
-    lows: [],
-  };
-  //   const highs = [];
-  //   const lows = [];
+  const dailyData = data.daily;
+  const highs = [];
+  const lows = [];
   for (const day of data) {
-    temps.highs.push(day.temp.max);
-    temps.lows.push(day.temp.min);
+    highs.push(day.temp.max);
+    lows.push(day.temp.min);
   }
 
-  console.log(temps.highs);
-  console.log(temps.lows);
-  return temps;
+  return { highs, lows };
 }
 
 function convertTime(time) {
@@ -106,30 +102,30 @@ function convertTime(time) {
 function updateWeatherDetails(data) {
   sunrise.textContent = convertTime(data.sunrise);
   sunset.textContent = convertTime(data.sunset);
-  feelsLike.textContent = data.feels_like;
+  feelsLike.textContent = Math.round(data.feels_like * (9 / 5) - 459.67);
   windSpeed.textContent = data.wind_speed;
   // wind_deg= data.wind_deg;
   humidity.textContent = data.humidity;
   uvi.textContent = data.uvi;
 }
 
-async function updateCurrentWeatherDisplay() {
+async function updateCurrentWeatherDisplay(dataSet) {
   getCurrentTime();
-  const currentData = await getCurrentWeatherData();
-  updateWeatherDetails(currentData);
-  const highsAndLows = await getHighsAndLows();
+  updateWeatherDetails(dataSet.currentWeather);
+  //   const highsAndLows = await getHighsAndLows();
 
   //Capitalize first letter of the description
   let weatherName =
-    currentData.weather[0].description.charAt(0).toUpperCase() +
-    currentData.weather[0].description.substring(1);
-  iconImage.src = `http://openweathermap.org/img/wn/${currentData.weather[0].icon}@2x.png`;
+    dataSet.currentWeather.weather[0].description.charAt(0).toUpperCase() +
+    dataSet.currentWeather.weather[0].description.substring(1);
+  iconImage.src = `http://openweathermap.org/img/wn/${dataSet.currentWeather.weather[0].icon}@2x.png`;
   weatherDescription.textContent = weatherName;
-  tempNumber.textContent = Math.round(currentData.temp * (9 / 5) - 459.67);
+  tempNumber.textContent = Math.round(
+    dataSet.currentWeather.temp * (9 / 5) - 459.67
+  );
   //move this to details
-  console.log(highsAndLows);
-  highTemp.textContent = Math.round(highsAndLows.highs[0] * (9 / 5) - 459.67);
-  lowTemp.textContent = Math.round(highsAndLows.lows[0] * (9 / 5) - 459.67);
+  //   highTemp.textContent = Math.round(highsAndLows.highs[0] * (9 / 5) - 459.67);
+  //   lowTemp.textContent = Math.round(highsAndLows.lows[0] * (9 / 5) - 459.67);
 }
 
 /*http://api.openweathermap.org/geo/1.0/direct?q=
