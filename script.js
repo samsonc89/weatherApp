@@ -25,18 +25,29 @@ searchBtn.addEventListener("click", () => {
 
 searchInput.value = "Oakland";
 
+function getCurrentTime() {
+  currentTime.textContent = new Intl.DateTimeFormat("default", {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  }).format(new Date());
+}
 //first get coordinates based on input
 async function getLatAndLon() {
-  let cityName = searchInput.value.trim();
+  let foundCity = searchInput.value.trim();
   //first use this to get the latitude and longitude of the city
   const response = await fetch(
-    `http://api.openweathermap.org/geo/1.0/direct?q=${cityName},us&appid=5943b09bd72402e9560b276898d410f0`,
+    `http://api.openweathermap.org/geo/1.0/direct?q=${foundCity},us&appid=5943b09bd72402e9560b276898d410f0`,
     { mode: "cors" }
   );
   const data = await response.json();
   let cityCoordinates = [data[0].lat, data[0].lon];
+  cityName.textContent = data[0].name;
   //extract out the lat & lon and store it into an object?
-  console.log(cityCoordinates);
+  console.log(data);
   return cityCoordinates;
 }
 
@@ -58,12 +69,38 @@ async function getCurrentWeatherData() {
   return data;
 }
 
+async function getHighsAndLows() {
+  const response = await getAllWeatherData();
+  const data = await response.daily;
+  const temps = {
+    highs: [],
+    lows: [],
+  };
+  //   const highs = [];
+  //   const lows = [];
+  for (const day of data) {
+    temps.highs.push(day.temp.max);
+    temps.lows.push(day.temp.min);
+  }
+
+  console.log(temps.highs);
+  console.log(temps.lows);
+  return temps;
+}
+
 function convertTime(time) {
   let date = new Date(time * 1000);
   return date.toLocaleTimeString(navigator.language, {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+function convertTime(time) {
+  let date = new Date(time * 1000);
+  return new Intl.DateTimeFormat("default", {
+    hour: "numeric",
+    minute: "numeric",
+  }).format(date);
 }
 
 function updateWeatherDetails(data) {
@@ -77,10 +114,10 @@ function updateWeatherDetails(data) {
 }
 
 async function updateCurrentWeatherDisplay() {
+  getCurrentTime();
   const currentData = await getCurrentWeatherData();
   updateWeatherDetails(currentData);
-
-  cityName.textContent = currentData.name; //change to user input
+  const highsAndLows = await getHighsAndLows();
 
   //Capitalize first letter of the description
   let weatherName =
@@ -90,8 +127,9 @@ async function updateCurrentWeatherDisplay() {
   weatherDescription.textContent = weatherName;
   tempNumber.textContent = Math.round(currentData.temp * (9 / 5) - 459.67);
   //move this to details
-  //   highTemp.textContent = Math.round(data.main.temp_max * (9 / 5) - 459.67);
-  //   lowTemp.textContent = Math.round(data.main.temp_min * (9 / 5) - 459.67);
+  console.log(highsAndLows);
+  highTemp.textContent = Math.round(highsAndLows.highs[0] * (9 / 5) - 459.67);
+  lowTemp.textContent = Math.round(highsAndLows.lows[0] * (9 / 5) - 459.67);
 }
 
 /*http://api.openweathermap.org/geo/1.0/direct?q=
