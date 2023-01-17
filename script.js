@@ -72,25 +72,23 @@ async function sortWeatherData() {
 }
 
 async function getHighsAndLows(data) {
-  const response = await getAllWeatherData();
-  const dailyData = data.daily;
   const highs = [];
   const lows = [];
   for (const day of data) {
     highs.push(day.temp.max);
     lows.push(day.temp.min);
   }
-
-  return { highs, lows };
+  highTemp.textContent = Math.round(highs[0] * (9 / 5) - 459.67);
+  lowTemp.textContent = Math.round(lows[0] * (9 / 5) - 459.67);
 }
 
-function convertTime(time) {
-  let date = new Date(time * 1000);
-  return date.toLocaleTimeString(navigator.language, {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+// function convertTime(time) {
+//   let date = new Date(time * 1000);
+//   return date.toLocaleTimeString(navigator.language, {
+//     hour: "2-digit",
+//     minute: "2-digit",
+//   });
+// }
 function convertTime(time) {
   let date = new Date(time * 1000);
   return new Intl.DateTimeFormat("default", {
@@ -111,6 +109,7 @@ function updateWeatherDetails(data) {
 
 async function updateCurrentWeatherDisplay(dataSet) {
   getCurrentTime();
+  getHighsAndLows(dataSet.dailyForecast);
   updateWeatherDetails(dataSet.currentWeather);
   //   const highsAndLows = await getHighsAndLows();
 
@@ -123,9 +122,6 @@ async function updateCurrentWeatherDisplay(dataSet) {
   tempNumber.textContent = Math.round(
     dataSet.currentWeather.temp * (9 / 5) - 459.67
   );
-  //move this to details
-  //   highTemp.textContent = Math.round(highsAndLows.highs[0] * (9 / 5) - 459.67);
-  //   lowTemp.textContent = Math.round(highsAndLows.lows[0] * (9 / 5) - 459.67);
 }
 
 /*http://api.openweathermap.org/geo/1.0/direct?q=
