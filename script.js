@@ -73,19 +73,19 @@ async function sortWeatherData() {
   return updateCurrentWeatherDisplay(currentData);
 }
 
-function getHighsAndLows(data) {
+function getHighsAndLows(data, unit = "F") {
   const highs = [];
   const lows = [];
   for (const day of data) {
     highs.push(day.temp.max);
     lows.push(day.temp.min);
   }
-  highTemp.textContent = Math.round(highs[0] * (9 / 5) - 459.67);
-  lowTemp.textContent = Math.round(lows[0] * (9 / 5) - 459.67);
+  highTemp.textContent = `${Math.round(convertTemp(highs[0], unit))}°${unit}`;
+  lowTemp.textContent = `${Math.round(convertTemp(lows[0], unit))}°${unit}`;
   return { highs, lows };
 }
 
-function renderHourly(dataSet) {
+function renderHourly(dataSet, unit = "F") {
   hourlyForecastDiv.innerHTML = "";
   for (let i = 1; i < 25; i++) {
     const time = new Date(dataSet[i].dt * 1000).getHours();
@@ -100,12 +100,12 @@ function renderHourly(dataSet) {
         : time + "AM"
     }
     <br />
-    ${Math.round(dataSet[i].temp * (9 / 5) - 459.67)}`;
+    ${Math.round(convertTemp(dataSet[i].temp, unit))}°${unit}`;
     hourlyForecastDiv.appendChild(div);
   }
 }
 
-function renderWeekly(dataSet, highsLows) {
+function renderWeekly(dataSet, highsLows, unit = "F") {
   weekForecastDiv.innerHTML = "";
   for (let i = 1; i <= 7; i++) {
     const day = new Date(dataSet[i].dt * 1000);
@@ -116,8 +116,10 @@ function renderWeekly(dataSet, highsLows) {
     div.innerHTML = `${formattedDay} ${
       dataSet[i].weather[0].main
     } -- Lo ${Math.round(
-      highsLows.lows[i] * (9 / 5) - 459.67
-    )} -- Hi ${Math.round(highsLows.highs[i] * (9 / 5) - 459.67)}`;
+      convertTemp(highsLows.lows[i], unit)
+    )}°${unit} -- Hi ${Math.round(
+      convertTemp(highsLows.highs[i], unit)
+    )}°${unit}`;
     weekForecastDiv.appendChild(div);
   }
 }
@@ -130,17 +132,25 @@ function convertTime(time) {
   }).format(date);
 }
 
-function updateWeatherDetails(data) {
+function convertTemp(temp, unit) {
+  if (unit === "F") {
+    return temp * (9 / 5) - 459.67;
+  } else if (unit === "C") {
+    return temp - 273.15;
+  }
+}
+
+function updateWeatherDetails(data, unit = "F") {
   sunrise.textContent = convertTime(data.sunrise);
   sunset.textContent = convertTime(data.sunset);
-  feelsLike.textContent = Math.round(data.feels_like * (9 / 5) - 459.67);
+  feelsLike.textContent = Math.round(convertTemp(data.feels_like, unit));
   windSpeed.textContent = data.wind_speed;
   // wind_deg= data.wind_deg;
   humidity.textContent = data.humidity;
   uvi.textContent = data.uvi;
 }
 
-async function updateCurrentWeatherDisplay(dataSet) {
+async function updateCurrentWeatherDisplay(dataSet, unit = "F") {
   getCurrentTime();
   updateWeatherDetails(dataSet.currentWeather);
   //   const highsAndLows = await getHighsAndLows();
@@ -154,7 +164,7 @@ async function updateCurrentWeatherDisplay(dataSet) {
   iconImage.src = `http://openweathermap.org/img/wn/${dataSet.currentWeather.weather[0].icon}@2x.png`;
   weatherDescription.textContent = weatherName;
   tempNumber.textContent = Math.round(
-    dataSet.currentWeather.temp * (9 / 5) - 459.67
+    convertTemp(dataSet.currentWeather.temp, unit)
   );
 }
 
