@@ -15,6 +15,7 @@ const humidity = document.querySelector("#humidity-text");
 const sunrise = document.querySelector("#sunrise-text");
 const sunset = document.querySelector("#sunset-text");
 const weatherDescription = document.querySelector("#weather-description");
+const hourlyForecastDiv = document.querySelector(".hourly-forecast");
 const APIkey = "5943b09bd72402e9560b276898d410f0";
 
 //When search button is clicked
@@ -82,13 +83,26 @@ async function getHighsAndLows(data) {
   lowTemp.textContent = Math.round(lows[0] * (9 / 5) - 459.67);
 }
 
-// function convertTime(time) {
-//   let date = new Date(time * 1000);
-//   return date.toLocaleTimeString(navigator.language, {
-//     hour: "2-digit",
-//     minute: "2-digit",
-//   });
-// }
+function renderHourly(dataSet) {
+  hourlyForecastDiv.innerHTML = "";
+  for (let i = 1; i < 25; i++) {
+    const time = new Date(dataSet[i].dt * 1000).getHours();
+    const div = document.createElement("div");
+    div.innerHTML = ` ${
+      time === 0
+        ? time + 12 + "AM"
+        : time > 12
+        ? time - 12 + "PM"
+        : time === 12
+        ? time + "PM"
+        : time + "AM"
+    }
+    <br />
+    ${Math.round(dataSet[i].temp * (9 / 5) - 459.67)}`;
+    hourlyForecastDiv.appendChild(div);
+  }
+}
+
 function convertTime(time) {
   let date = new Date(time * 1000);
   return new Intl.DateTimeFormat("default", {
@@ -112,6 +126,7 @@ async function updateCurrentWeatherDisplay(dataSet) {
   getHighsAndLows(dataSet.dailyForecast);
   updateWeatherDetails(dataSet.currentWeather);
   //   const highsAndLows = await getHighsAndLows();
+  renderHourly(dataSet.hourlyForecast);
 
   //Capitalize first letter of the description
   let weatherName =
