@@ -16,6 +16,7 @@ const sunrise = document.querySelector("#sunrise-text");
 const sunset = document.querySelector("#sunset-text");
 const weatherDescription = document.querySelector("#weather-description");
 const hourlyForecastDiv = document.querySelector(".hourly-forecast");
+const weekForecastDiv = document.querySelector(".week-forecast");
 const APIkey = "5943b09bd72402e9560b276898d410f0";
 
 //When search button is clicked
@@ -72,7 +73,7 @@ async function sortWeatherData() {
   return updateCurrentWeatherDisplay(currentData);
 }
 
-async function getHighsAndLows(data) {
+function getHighsAndLows(data) {
   const highs = [];
   const lows = [];
   for (const day of data) {
@@ -81,6 +82,7 @@ async function getHighsAndLows(data) {
   }
   highTemp.textContent = Math.round(highs[0] * (9 / 5) - 459.67);
   lowTemp.textContent = Math.round(lows[0] * (9 / 5) - 459.67);
+  return { highs, lows };
 }
 
 function renderHourly(dataSet) {
@@ -100,6 +102,23 @@ function renderHourly(dataSet) {
     <br />
     ${Math.round(dataSet[i].temp * (9 / 5) - 459.67)}`;
     hourlyForecastDiv.appendChild(div);
+  }
+}
+
+function renderWeekly(dataSet, highsLows) {
+  weekForecastDiv.innerHTML = "";
+  for (let i = 1; i <= 7; i++) {
+    const day = new Date(dataSet[i].dt * 1000);
+    let formattedDay = new Intl.DateTimeFormat("default", {
+      weekday: "short",
+    }).format(day);
+    const div = document.createElement("div");
+    div.innerHTML = `${formattedDay} ${
+      dataSet[i].weather[0].main
+    } -- Lo ${Math.round(
+      highsLows.lows[i] * (9 / 5) - 459.67
+    )} -- Hi ${Math.round(highsLows.highs[i] * (9 / 5) - 459.67)}`;
+    weekForecastDiv.appendChild(div);
   }
 }
 
@@ -123,10 +142,10 @@ function updateWeatherDetails(data) {
 
 async function updateCurrentWeatherDisplay(dataSet) {
   getCurrentTime();
-  getHighsAndLows(dataSet.dailyForecast);
   updateWeatherDetails(dataSet.currentWeather);
   //   const highsAndLows = await getHighsAndLows();
   renderHourly(dataSet.hourlyForecast);
+  renderWeekly(dataSet.dailyForecast, getHighsAndLows(dataSet.dailyForecast));
 
   //Capitalize first letter of the description
   let weatherName =
