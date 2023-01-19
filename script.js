@@ -69,7 +69,8 @@ async function sortWeatherData() {
   const currentWeather = response.current;
   const dailyForecast = response.daily;
   const hourlyForecast = response.hourly;
-  const currentData = { currentWeather, dailyForecast, hourlyForecast };
+  const sunset = new Date(response.current.sunset).getHours();
+  const currentData = { currentWeather, dailyForecast, hourlyForecast, sunset };
   return updateCurrentWeatherDisplay(currentData);
 }
 
@@ -88,7 +89,7 @@ function getHighsAndLows(data, unit = "F") {
 function renderHourly(dataSet, unit = "F") {
   hourlyForecastDiv.innerHTML = "";
   for (let i = 1; i < 25; i++) {
-    const time = new Date(dataSet[i].dt * 1000).getHours();
+    const time = new Date(dataSet.hourlyForecast[i].dt * 1000).getHours();
     const div = document.createElement("div");
     div.innerHTML = ` ${
       time === 0
@@ -100,7 +101,14 @@ function renderHourly(dataSet, unit = "F") {
         : time + "AM"
     }
     <br />
-    ${Math.round(convertTemp(dataSet[i].temp, unit))}°${unit}`;
+    <img class='weather-icons' src='./assets/${
+      dataSet.hourlyForecast[i].weather[0].main == "Clear" &&
+      time > dataSet.sunset
+        ? "Night"
+        : dataSet.hourlyForecast[i].weather[0].main
+    }.svg'>
+    <br />
+    ${Math.round(convertTemp(dataSet.hourlyForecast[i].temp, unit))}°${unit}`;
     hourlyForecastDiv.appendChild(div);
   }
 }
@@ -113,9 +121,9 @@ function renderWeekly(dataSet, highsLows, unit = "F") {
       weekday: "short",
     }).format(day);
     const div = document.createElement("div");
-    div.innerHTML = `${formattedDay} ${
+    div.innerHTML = `${formattedDay} <img class='weather-icons' src='./assets/${
       dataSet[i].weather[0].main
-    } -- Lo ${Math.round(
+    }.svg'> -- Lo ${Math.round(
       convertTemp(highsLows.lows[i], unit)
     )}°${unit} -- Hi ${Math.round(
       convertTemp(highsLows.highs[i], unit)
@@ -154,7 +162,7 @@ async function updateCurrentWeatherDisplay(dataSet, unit = "F") {
   getCurrentTime();
   updateWeatherDetails(dataSet.currentWeather);
   //   const highsAndLows = await getHighsAndLows();
-  renderHourly(dataSet.hourlyForecast);
+  renderHourly(dataSet);
   renderWeekly(dataSet.dailyForecast, getHighsAndLows(dataSet.dailyForecast));
 
   //Capitalize first letter of the description
