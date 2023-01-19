@@ -33,64 +33,63 @@
             <div class="high-low-wrapper">
               <div>
                 <span id="high-temp"> </span>
-                <span class="temp-unit">°F</span>
+                <span class="temp-unit"></span>
               </div>
               <div>
                 <span id="low-temp"> </span>
-                <span class="temp-unit">°F</span>
+                <span class="temp-unit"></span>
               </div>
             </div>
             <div class="temp-toggle"></div>
           </div>
           <div class="weather-icon-display">
-            <div class="icon-display"><img src="" alt="" id="icon-image"></div>
+            <div class="icon-display">
+              <img src="" alt="" id="icon-image" class="hidden" />
+            </div>
             <div id="weather-description"></div>
           </div>
         </div>
         <div class="gif-wrapper">
-          <img src="" alt="" />
+          <img src="" alt="" id="gif-image" />
         </div>
       </div>
       <div class="details-wrapper">
-        <div class="hourly-forecast"></div>
-        <div class="week-forecast"></div>
         <div class="details">
           <div class="details-card">
-            <img src="" alt="" class="details-icon">
+            <img src="" alt="" class="details-icon" />
             <h4 class="details-title">Feels Like</h4>
             <p class="details-text" id="feels-like-text"></p>
-
           </div>
           <div class="details-card">
-            <img src="" alt="" class="details-icon">
+            <img src="" alt="" class="details-icon" />
             <h4 class="details-title">Windspeed</h4>
-            <img src="" alt="" id="wind-direction">
+            <img src="./assets/arrow.svg" alt="" id="wind-direction" />
             <p class="details-text" id="windspeed-text"></p>
           </div>
           <div class="details-card">
-            <img src="" alt="" class="details-icon">
+            <img src="" alt="" class="details-icon" />
             <h4 class="details-title">UV Index</h4>
             <p class="details-text" id="uvi-text"></p>
-            
           </div>
           <div class="details-card">
-            <img src="" alt="" class="details-icon">
+            <img src="" alt="" class="details-icon" />
             <h4 class="details-title">Humidity</h4>
             <p class="details-text" id="humidity-text"></p>
           </div>
           <div class="details-card">
-            <img src="" alt="" class="details-icon">
+            <img src="" alt="" class="details-icon" />
             <h4 class="details-title">Sunrise</h4>
             <p class="details-text" id="sunrise-text"></p>
           </div>
           <div class="details-card">
-            <img src="" alt="" class="details-icon">
+            <img src="" alt="" class="details-icon" />
             <h4 class="details-title">Sunset</h4>
             <p class="details-text" id="sunset-text"></p>
           </div>
         </div>
+        <div class="hourly-forecast"></div>
+        <div class="week-forecast"></div>
       </div>
     </div>
-    
   </body>
 </html>
