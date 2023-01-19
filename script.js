@@ -7,8 +7,10 @@ const currentTime = document.querySelector("#current-time");
 const tempNumber = document.querySelector("#temp-number");
 const highTemp = document.querySelector("#high-temp");
 const lowTemp = document.querySelector("#low-temp");
+const gifImage = document.querySelector("#gif-image");
 const iconImage = document.querySelector("#icon-image");
 const windSpeed = document.querySelector("#windspeed-text");
+const windDirection = document.querySelector("#wind-direction");
 const feelsLike = document.querySelector("#feels-like-text");
 const uvi = document.querySelector("#uvi-text");
 const humidity = document.querySelector("#humidity-text");
@@ -139,7 +141,9 @@ function updateWeatherDetails(data, unit = "F") {
   sunset.textContent = convertTime(data.sunset);
   feelsLike.textContent = Math.round(data.feels_like) + "°" + unit;
   windSpeed.textContent = data.wind_speed;
-  // wind_deg= data.wind_deg;
+  windDirection.style.transform = `rotate(${
+    data.wind_deg >= 180 ? data.wind_deg - 180 : data.wind_deg + 180
+  }deg)`;
   humidity.textContent = data.humidity + "%";
   uvi.textContent = data.uvi;
 }
@@ -150,12 +154,25 @@ async function updateCurrentWeatherDisplay(dataSet, unit = "F") {
   //   const highsAndLows = await getHighsAndLows();
   renderHourly(dataSet);
   renderWeekly(dataSet.dailyForecast, getHighsAndLows(dataSet.dailyForecast));
+  console.log(
+    dataSet.currentWeather.weather[0].description.split(" ").join("+")
+  );
 
+  const response = await fetch(
+    `https://api.giphy.com/v1/gifs/translate?api_key=3A7xFS24s0gdo0dYMg0jp3LtHYoVVEs1&s=${dataSet.currentWeather.weather[0].description
+      .split(" ")
+      .join("+")}`,
+    { mode: "cors" }
+  );
+  const data = await response.json();
+  console.log(data);
+  gifImage.src = data.data.images.original.url;
   //Capitalize first letter of the description
   let weatherName =
     dataSet.currentWeather.weather[0].description.charAt(0).toUpperCase() +
     dataSet.currentWeather.weather[0].description.substring(1);
-  iconImage.src = `http://openweathermap.org/img/wn/${dataSet.currentWeather.weather[0].icon}@2x.png`;
+  iconImage.classList.remove("hidden");
+  iconImage.src = `./assets/${dataSet.currentWeather.weather[0].main}.svg`;
   weatherDescription.textContent = weatherName;
   tempNumber.textContent = Math.round(dataSet.currentWeather.temp);
 }
