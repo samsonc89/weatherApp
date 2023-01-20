@@ -52,7 +52,6 @@ async function getLatAndLon() {
   let cityCoordinates = [data[0].lat, data[0].lon];
   cityName.textContent = data[0].name;
   //extract out the lat & lon and store it into an object?
-  console.log(data);
   return cityCoordinates;
 }
 
@@ -84,7 +83,6 @@ async function sortWeatherData(unit) {
   const hourlyForecast = response.hourly;
   const sunset = new Date(convertTime(currentWeather.sunset, timeOffset));
   const sunrise = new Date(convertTime(currentWeather.sunrise, timeOffset));
-  console.log(sunset, sunrise);
   const currentData = {
     currentWeather,
     dailyForecast,
@@ -126,7 +124,6 @@ function renderHourly(dataSet, unit = "F") {
     const time = new Date(
       convertTime(dataSet.hourlyForecast[i].dt, dataSet.timeOffset)
     ).getHours();
-    console.log(time);
     const div = document.createElement("div");
     div.innerHTML = ` ${
       time === 0
