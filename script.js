@@ -20,11 +20,12 @@ const weatherDescription = document.querySelector("#weather-description");
 const hourlyForecastDiv = document.querySelector(".hourly-forecast");
 const weekForecastDiv = document.querySelector(".week-forecast");
 const APIkey = "5943b09bd72402e9560b276898d410f0";
+let unit = "imperial";
 
 //When search button is clicked
 
 searchBtn.addEventListener("click", () => {
-  sortWeatherData("imperial");
+  sortWeatherData(unit);
 });
 
 searchInput.value = "Oakland";
