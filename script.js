@@ -68,12 +68,19 @@ async function getAllWeatherData(unit) {
 
 async function sortWeatherData(unit) {
   const response = await getAllWeatherData(unit);
+  const timeOffset = response.timezone_offset;
   const currentWeather = response.current;
   const dailyForecast = response.daily;
   const hourlyForecast = response.hourly;
   const sunset = new Date(response.current.sunset).getHours();
-  const currentData = { currentWeather, dailyForecast, hourlyForecast, sunset };
-  return updateCurrentWeatherDisplay(currentData);
+  const currentData = {
+    currentWeather,
+    dailyForecast,
+    hourlyForecast,
+    sunset,
+    timeOffset,
+  };
+  return updateDisplay(currentData);
 }
 
 function getHighsAndLows(data, unit = "F") {
@@ -88,10 +95,27 @@ function getHighsAndLows(data, unit = "F") {
   return { highs, lows };
 }
 
+function renderCurrent(dataSet) {
+  let weatherName =
+    dataSet.currentWeather.weather[0].description.charAt(0).toUpperCase() +
+    dataSet.currentWeather.weather[0].description.substring(1);
+  iconImage.classList.remove("hidden");
+  iconImage.src = `./assets/${dataSet.currentWeather.weather[0].main}.svg`;
+  weatherDescription.textContent = weatherName;
+  tempNumber.textContent = Math.round(dataSet.currentWeather.temp);
+}
+
 function renderHourly(dataSet, unit = "F") {
+  //get current timezone offset * 60 because 60 seconds in a minute and add the offset for the city in question
+  let offsetDifference =
+    new Date().getTimezoneOffset() * 60 + dataSet.timeOffset;
+  console.log(offsetDifference);
   hourlyForecastDiv.innerHTML = "";
   for (let i = 1; i < 25; i++) {
-    const time = new Date(dataSet.hourlyForecast[i].dt * 1000).getHours();
+    const time = new Date(
+      (dataSet.hourlyForecast[i].dt + offsetDifference) * 1000
+    ).getHours();
+    // console.log(time);
     const div = document.createElement("div");
     div.innerHTML = ` ${
       time === 0
@@ -140,7 +164,7 @@ function updateWeatherDetails(data, unit = "F") {
   sunrise.textContent = convertTime(data.sunrise);
   sunset.textContent = convertTime(data.sunset);
   feelsLike.textContent = Math.round(data.feels_like) + "°" + unit;
-  windSpeed.textContent = data.wind_speed;
+  windSpeed.textContent = data.wind_speed + "mph";
   windDirection.style.transform = `rotate(${
     data.wind_deg >= 180 ? data.wind_deg - 180 : data.wind_deg + 180
   }deg)`;
@@ -148,16 +172,7 @@ function updateWeatherDetails(data, unit = "F") {
   uvi.textContent = data.uvi;
 }
 
-async function updateCurrentWeatherDisplay(dataSet, unit = "F") {
-  getCurrentTime();
-  updateWeatherDetails(dataSet.currentWeather);
-  //   const highsAndLows = await getHighsAndLows();
-  renderHourly(dataSet);
-  renderWeekly(dataSet.dailyForecast, getHighsAndLows(dataSet.dailyForecast));
-  console.log(
-    dataSet.currentWeather.weather[0].description.split(" ").join("+")
-  );
-
+async function renderGiphy(dataSet) {
   const response = await fetch(
     `https://api.giphy.com/v1/gifs/translate?api_key=3A7xFS24s0gdo0dYMg0jp3LtHYoVVEs1&s=${dataSet.currentWeather.weather[0].description
       .split(" ")
@@ -165,16 +180,35 @@ async function updateCurrentWeatherDisplay(dataSet, unit = "F") {
     { mode: "cors" }
   );
   const data = await response.json();
-  console.log(data);
   gifImage.src = data.data.images.original.url;
+}
+
+async function updateDisplay(dataSet, unit = "F") {
+  getCurrentTime();
+  updateWeatherDetails(dataSet.currentWeather);
+  //   const highsAndLows = await getHighsAndLows();
+  renderHourly(dataSet);
+  renderWeekly(dataSet.dailyForecast, getHighsAndLows(dataSet.dailyForecast));
+  renderCurrent(dataSet);
+  renderGiphy(dataSet);
+
+  //   const response = await fetch(
+  //     `https://api.giphy.com/v1/gifs/translate?api_key=3A7xFS24s0gdo0dYMg0jp3LtHYoVVEs1&s=${dataSet.currentWeather.weather[0].description
+  //       .split(" ")
+  //       .join("+")}`,
+  //     { mode: "cors" }
+  //   );
+  //   const data = await response.json();
+  //   gifImage.src = data.data.images.original.url;
   //Capitalize first letter of the description
-  let weatherName =
-    dataSet.currentWeather.weather[0].description.charAt(0).toUpperCase() +
-    dataSet.currentWeather.weather[0].description.substring(1);
-  iconImage.classList.remove("hidden");
-  iconImage.src = `./assets/${dataSet.currentWeather.weather[0].main}.svg`;
-  weatherDescription.textContent = weatherName;
-  tempNumber.textContent = Math.round(dataSet.currentWeather.temp);
+
+  //   let weatherName =
+  //     dataSet.currentWeather.weather[0].description.charAt(0).toUpperCase() +
+  //     dataSet.currentWeather.weather[0].description.substring(1);
+  //   iconImage.classList.remove("hidden");
+  //   iconImage.src = `./assets/${dataSet.currentWeather.weather[0].main}.svg`;
+  //   weatherDescription.textContent = weatherName;
+  //   tempNumber.textContent = Math.round(dataSet.currentWeather.temp);
 }
 
 /*http://api.openweathermap.org/geo/1.0/direct?q=
