@@ -72,12 +72,15 @@ async function sortWeatherData(unit) {
   const currentWeather = response.current;
   const dailyForecast = response.daily;
   const hourlyForecast = response.hourly;
-  const sunset = new Date(response.current.sunset).getHours();
+  const sunset = new Date(response.current.sunset * 1000).getHours();
+  const sunrise = new Date(response.current.sunrise * 1000).getHours();
+  console.log(sunset, sunrise);
   const currentData = {
     currentWeather,
     dailyForecast,
     hourlyForecast,
     sunset,
+    sunrise,
     timeOffset,
   };
   return updateDisplay(currentData);
@@ -109,13 +112,12 @@ function renderHourly(dataSet, unit = "F") {
   //get current timezone offset * 60 because 60 seconds in a minute and add the offset for the city in question
   let offsetDifference =
     new Date().getTimezoneOffset() * 60 + dataSet.timeOffset;
-  console.log(offsetDifference);
   hourlyForecastDiv.innerHTML = "";
   for (let i = 1; i < 25; i++) {
     const time = new Date(
       (dataSet.hourlyForecast[i].dt + offsetDifference) * 1000
     ).getHours();
-    // console.log(time);
+    console.log(time);
     const div = document.createElement("div");
     div.innerHTML = ` ${
       time === 0
@@ -129,7 +131,7 @@ function renderHourly(dataSet, unit = "F") {
     <br />
     <img class='weather-icons' src='./assets/${
       dataSet.hourlyForecast[i].weather[0].main == "Clear" &&
-      time > dataSet.sunset
+      (time > dataSet.sunset || time < dataSet.sunrise)
         ? "Night"
         : dataSet.hourlyForecast[i].weather[0].main
     }.svg'>
