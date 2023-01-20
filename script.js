@@ -29,7 +29,7 @@ searchBtn.addEventListener("click", () => {
 
 searchInput.value = "Oakland";
 
-function getCurrentTime() {
+function updateCurrentTime(date) {
   currentTime.textContent = new Intl.DateTimeFormat("default", {
     weekday: "short",
     year: "numeric",
@@ -37,7 +37,7 @@ function getCurrentTime() {
     day: "numeric",
     hour: "numeric",
     minute: "numeric",
-  }).format(new Date());
+  }).format(date);
 }
 //first get coordinates based on input
 async function getLatAndLon() {
@@ -66,14 +66,23 @@ async function getAllWeatherData(unit) {
   return data;
 }
 
+function convertTime(date, offset) {
+  //get time right now and add back the minutes from the location's time compared to yours
+  let offsetDifference = new Date().getTimezoneOffset() * 60 + offset;
+  date += offsetDifference;
+  return date * 1000;
+}
+
 async function sortWeatherData(unit) {
   const response = await getAllWeatherData(unit);
   const timeOffset = response.timezone_offset;
+  //   let offsetDifference = new Date().getTimezoneOffset() * 60 + timeOffset;
   const currentWeather = response.current;
+  updateCurrentTime(convertTime(currentWeather.dt, timeOffset));
   const dailyForecast = response.daily;
   const hourlyForecast = response.hourly;
-  const sunset = new Date(response.current.sunset * 1000).getHours();
-  const sunrise = new Date(response.current.sunrise * 1000).getHours();
+  const sunset = new Date(convertTime(currentWeather.sunset, timeOffset));
+  const sunrise = new Date(convertTime(currentWeather.sunrise, timeOffset));
   console.log(sunset, sunrise);
   const currentData = {
     currentWeather,
@@ -110,12 +119,11 @@ function renderCurrent(dataSet) {
 
 function renderHourly(dataSet, unit = "F") {
   //get current timezone offset * 60 because 60 seconds in a minute and add the offset for the city in question
-  let offsetDifference =
-    new Date().getTimezoneOffset() * 60 + dataSet.timeOffset;
+
   hourlyForecastDiv.innerHTML = "";
   for (let i = 1; i < 25; i++) {
     const time = new Date(
-      (dataSet.hourlyForecast[i].dt + offsetDifference) * 1000
+      convertTime(dataSet.hourlyForecast[i].dt, dataSet.timeOffset)
     ).getHours();
     console.log(time);
     const div = document.createElement("div");
@@ -131,7 +139,7 @@ function renderHourly(dataSet, unit = "F") {
     <br />
     <img class='weather-icons' src='./assets/${
       dataSet.hourlyForecast[i].weather[0].main == "Clear" &&
-      (time > dataSet.sunset || time < dataSet.sunrise)
+      (time > dataSet.sunset.getHours() || time < dataSet.sunrise.getHours())
         ? "Night"
         : dataSet.hourlyForecast[i].weather[0].main
     }.svg'>
@@ -154,8 +162,8 @@ function renderWeekly(dataSet, highsLows, unit = "F") {
   }
 }
 
-function convertTime(time) {
-  let date = new Date(time * 1000);
+function formatTime(time) {
+  let date = new Date(time);
   return new Intl.DateTimeFormat("default", {
     hour: "numeric",
     minute: "numeric",
@@ -163,15 +171,18 @@ function convertTime(time) {
 }
 
 function updateWeatherDetails(data, unit = "F") {
-  sunrise.textContent = convertTime(data.sunrise);
-  sunset.textContent = convertTime(data.sunset);
-  feelsLike.textContent = Math.round(data.feels_like) + "°" + unit;
-  windSpeed.textContent = data.wind_speed + "mph";
+  sunrise.textContent = formatTime(data.sunrise);
+  sunset.textContent = formatTime(data.sunset);
+  feelsLike.textContent =
+    Math.round(data.currentWeather.feels_like) + "°" + unit;
+  windSpeed.textContent = data.currentWeather.wind_speed + "mph";
   windDirection.style.transform = `rotate(${
-    data.wind_deg >= 180 ? data.wind_deg - 180 : data.wind_deg + 180
+    data.currentWeather.wind_deg >= 180
+      ? data.currentWeather.wind_deg - 180
+      : data.currentWeather.wind_deg + 180
   }deg)`;
-  humidity.textContent = data.humidity + "%";
-  uvi.textContent = data.uvi;
+  humidity.textContent = data.currentWeather.humidity + "%";
+  uvi.textContent = data.currentWeather.uvi;
 }
 
 async function renderGiphy(dataSet) {
@@ -186,31 +197,12 @@ async function renderGiphy(dataSet) {
 }
 
 async function updateDisplay(dataSet, unit = "F") {
-  getCurrentTime();
-  updateWeatherDetails(dataSet.currentWeather);
+  updateWeatherDetails(dataSet);
   //   const highsAndLows = await getHighsAndLows();
   renderHourly(dataSet);
   renderWeekly(dataSet.dailyForecast, getHighsAndLows(dataSet.dailyForecast));
   renderCurrent(dataSet);
   renderGiphy(dataSet);
-
-  //   const response = await fetch(
-  //     `https://api.giphy.com/v1/gifs/translate?api_key=3A7xFS24s0gdo0dYMg0jp3LtHYoVVEs1&s=${dataSet.currentWeather.weather[0].description
-  //       .split(" ")
-  //       .join("+")}`,
-  //     { mode: "cors" }
-  //   );
-  //   const data = await response.json();
-  //   gifImage.src = data.data.images.original.url;
-  //Capitalize first letter of the description
-
-  //   let weatherName =
-  //     dataSet.currentWeather.weather[0].description.charAt(0).toUpperCase() +
-  //     dataSet.currentWeather.weather[0].description.substring(1);
-  //   iconImage.classList.remove("hidden");
-  //   iconImage.src = `./assets/${dataSet.currentWeather.weather[0].main}.svg`;
-  //   weatherDescription.textContent = weatherName;
-  //   tempNumber.textContent = Math.round(dataSet.currentWeather.temp);
 }
 
 /*http://api.openweathermap.org/geo/1.0/direct?q=
