@@ -155,7 +155,16 @@ function renderWeekly(dataSet, highsLows, unit = "F") {
       weekday: "short",
     }).format(day);
     const div = document.createElement("div");
-    div.innerHTML = `${formattedDay} <img class='week-forecast-icons' src='./assets/${dataSet[i].weather[0].main}.svg'> -- Lo ${highsLows.lows[i]}°${unit} -- Hi ${highsLows.highs[i]}°${unit}`;
+    div.classList.add("week-card");
+    div.innerHTML = `<h3>${formattedDay}</h3>
+    
+    <br>
+    H:${highsLows.highs[i]}°${unit}
+   
+    <br> 
+    <img class='week-forecast-icons' src='./assets/${dataSet[i].weather[0].main}.svg'> 
+    <br>
+    L:${highsLows.lows[i]}°${unit} `;
     weekForecastDiv.appendChild(div);
   }
 }
