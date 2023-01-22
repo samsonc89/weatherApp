@@ -101,8 +101,8 @@ function getHighsAndLows(data, unit = "F") {
     highs.push(Math.round(day.temp.max));
     lows.push(Math.round(day.temp.min));
   }
-  highTemp.textContent = `${highs[0]}°${unit}`;
-  lowTemp.textContent = `${lows[0]}°${unit}`;
+  highTemp.textContent = `H:${highs[0]}°${unit}`;
+  lowTemp.textContent = `L:${lows[0]}°${unit}`;
   return { highs, lows };
 }
 
@@ -155,7 +155,7 @@ function renderWeekly(dataSet, highsLows, unit = "F") {
       weekday: "short",
     }).format(day);
     const div = document.createElement("div");
-    div.innerHTML = `${formattedDay} <img class='weather-icons' src='./assets/${dataSet[i].weather[0].main}.svg'> -- Lo ${highsLows.lows[i]}°${unit} -- Hi ${highsLows.highs[i]}°${unit}`;
+    div.innerHTML = `${formattedDay} <img class='week-forecast-icons' src='./assets/${dataSet[i].weather[0].main}.svg'> -- Lo ${highsLows.lows[i]}°${unit} -- Hi ${highsLows.highs[i]}°${unit}`;
     weekForecastDiv.appendChild(div);
   }
 }

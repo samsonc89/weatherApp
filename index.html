@@ -10,15 +10,16 @@
   </head>
   <body>
     <div class="main-wrapper">
+      <div class="search-area">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search by City, State"
+        />
+        <button id="search-btn">Search</button>
+        <div class="temp-toggle"></div>
+      </div>
       <div class="today-wrapper">
-        <div class="search-area">
-          <input
-            type="text"
-            id="search-input"
-            placeholder="Search by City, State"
-          />
-          <button id="search-btn">Search</button>
-        </div>
         <div class="city-wrapper">
           <h2 id="city-name">Redwood City, CA</h2>
           <h4 id="current-time">Tuesday Jan 10 10:47Am</h4>
@@ -32,19 +33,18 @@
             </div>
             <div class="high-low-wrapper">
               <div>
-                <span id="high-temp"> </span>
-                <span class="temp-unit"></span>
-              </div>
-              <div>
                 <span id="low-temp"> </span>
                 <span class="temp-unit"></span>
               </div>
+              <div>
+                <span id="high-temp"> </span>
+                <span class="temp-unit"></span>
+              </div>
             </div>
-            <div class="temp-toggle"></div>
           </div>
           <div class="weather-icon-display">
             <div class="icon-display">
-              <img src="" alt="" id="icon-image" class="hidden" />
+              <img src="" alt="" id="icon-image" />
             </div>
             <div id="weather-description"></div>
           </div>
