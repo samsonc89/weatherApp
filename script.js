@@ -139,7 +139,7 @@ function renderHourly(dataSet, unit = "F") {
     <br />
     <img class='weather-icons' src='./assets/${
       dataSet.hourlyForecast[i].weather[0].main == "Clear" &&
-      (time > dataSet.sunset.getHours() || time < dataSet.sunrise.getHours())
+      (time > dataSet.sunset.getHours() || time <= dataSet.sunrise.getHours())
         ? "Night"
         : dataSet.hourlyForecast[i].weather[0].main
     }.svg'>
