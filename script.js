@@ -1,5 +1,6 @@
 "use strict";
 
+const overlay = document.querySelector(".overlay");
 const searchInput = document.querySelector("#search-input");
 const searchBtn = document.querySelector("#search-btn");
 const cityName = document.querySelector("#city-name");
@@ -76,6 +77,7 @@ function convertTime(date, offset) {
 }
 
 async function sortWeatherData(unit) {
+  overlay.style.display = "inline";
   const response = await getAllWeatherData(unit);
   const timeOffset = response.timezone_offset;
   //   let offsetDifference = new Date().getTimezoneOffset() * 60 + timeOffset;
@@ -213,6 +215,7 @@ async function updateDisplay(dataSet, unit = "F") {
   renderCurrent(dataSet);
   renderGiphy(dataSet);
   searchInput.value = "";
+  overlay.style.display = "none";
 }
 
 /*http://api.openweathermap.org/geo/1.0/direct?q=
