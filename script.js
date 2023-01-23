@@ -28,7 +28,9 @@ searchBtn.addEventListener("click", () => {
   sortWeatherData(unit);
 });
 
-searchInput.value = "Oakland";
+searchInput.value = "Los Angeles";
+
+sortWeatherData(unit);
 
 function updateCurrentTime(date) {
   currentTime.textContent = new Intl.DateTimeFormat("default", {
@@ -210,6 +212,7 @@ async function updateDisplay(dataSet, unit = "F") {
   renderWeekly(dataSet.dailyForecast, getHighsAndLows(dataSet.dailyForecast));
   renderCurrent(dataSet);
   renderGiphy(dataSet);
+  searchInput.value = "";
 }
 
 /*http://api.openweathermap.org/geo/1.0/direct?q=
