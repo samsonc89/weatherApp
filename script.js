@@ -29,7 +29,46 @@ searchBtn.addEventListener("click", () => {
   sortWeatherData(unit);
 });
 
-searchInput.value = "Los Angeles";
+// const cityList = document.querySelector("#city-list");
+// const citySeach = document.querySelector("#data-search-btn");
+// citySeach.addEventListener("click", findCity);
+// cityList.value = "los angeles";
+
+// async function findCity() {
+//   let cityName = cityList.value
+//     .trim()
+//     .split(" ")
+//     .map(
+//       ([firstChar, ...rest]) =>
+//         firstChar.toUpperCase() + rest.join("").toLowerCase()
+//     )
+//     .join(" ");
+//   const response = await fetch("./city.list.json");
+//   const data = await response.json();
+
+//   let filteredCities = data
+//     .filter((x) => x.name.startsWith(cityName))
+//     //sort by city name first
+//     .sort((a, b) => {
+//       if (a.name < b.name) {
+//         return -1;
+//       }
+//       if (a.name > b.name) {
+//         return 1;
+//       }
+//       //then sort by state
+//       if (a.state < b.state) {
+//         return -1;
+//       }
+//       if (a.name > b.name) {
+//         return 1;
+//       }
+//       return 0;
+//     });
+//   console.log(filteredCities);
+// }
+
+searchInput.value = "Los Angeles, CA";
 
 sortWeatherData(unit);
 
@@ -45,10 +84,11 @@ function updateCurrentTime(date) {
 }
 //first get coordinates based on input
 async function getLatAndLon() {
-  let foundCity = searchInput.value.trim();
   //first use this to get the latitude and longitude of the city
+
+  let foundCity = searchInput.value.trim().split(",");
   const response = await fetch(
-    `http://api.openweathermap.org/geo/1.0/direct?q=${foundCity},us&appid=5943b09bd72402e9560b276898d410f0`,
+    `http://api.openweathermap.org/geo/1.0/direct?q=${foundCity[0]},${foundCity[1]},us&appid=5943b09bd72402e9560b276898d410f0`,
     { mode: "cors" }
   );
   const data = await response.json();
@@ -77,25 +117,33 @@ function convertTime(date, offset) {
 }
 
 async function sortWeatherData(unit) {
-  overlay.style.display = "inline";
-  const response = await getAllWeatherData(unit);
-  const timeOffset = response.timezone_offset;
-  //   let offsetDifference = new Date().getTimezoneOffset() * 60 + timeOffset;
-  const currentWeather = response.current;
-  updateCurrentTime(convertTime(currentWeather.dt, timeOffset));
-  const dailyForecast = response.daily;
-  const hourlyForecast = response.hourly;
-  const sunset = new Date(convertTime(currentWeather.sunset, timeOffset));
-  const sunrise = new Date(convertTime(currentWeather.sunrise, timeOffset));
-  const currentData = {
-    currentWeather,
-    dailyForecast,
-    hourlyForecast,
-    sunset,
-    sunrise,
-    timeOffset,
-  };
-  return updateDisplay(currentData);
+  try {
+    document.querySelector("#error-message").textContent = "";
+    overlay.style.display = "inline";
+    const response = await getAllWeatherData(unit);
+    const timeOffset = response.timezone_offset;
+    //   let offsetDifference = new Date().getTimezoneOffset() * 60 + timeOffset;
+    const currentWeather = response.current;
+    updateCurrentTime(convertTime(currentWeather.dt, timeOffset));
+    const dailyForecast = response.daily;
+    const hourlyForecast = response.hourly;
+    const sunset = new Date(convertTime(currentWeather.sunset, timeOffset));
+    const sunrise = new Date(convertTime(currentWeather.sunrise, timeOffset));
+    const currentData = {
+      currentWeather,
+      dailyForecast,
+      hourlyForecast,
+      sunset,
+      sunrise,
+      timeOffset,
+    };
+    return updateDisplay(currentData);
+  } catch (error) {
+    overlay.style.display = "none";
+    console.log(error);
+    document.querySelector("#error-message").textContent =
+      "Please search valid city";
+  }
 }
 
 function getHighsAndLows(data, unit = "F") {
