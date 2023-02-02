@@ -49,7 +49,7 @@ async function getLatAndLon() {
 
   let foundCity = searchInput.value.trim().split(",");
   const response = await fetch(
-    `http://api.openweathermap.org/geo/1.0/direct?q=${foundCity[0]},${foundCity[1]},us&appid=5943b09bd72402e9560b276898d410f0`,
+    `https://api.openweathermap.org/geo/1.0/direct?q=${foundCity[0]},${foundCity[1]},us&appid=5943b09bd72402e9560b276898d410f0`,
     { mode: "cors" }
   );
   const data = await response.json();
