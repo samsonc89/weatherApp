@@ -29,45 +29,6 @@ searchBtn.addEventListener("click", () => {
   sortWeatherData(unit);
 });
 
-// const cityList = document.querySelector("#city-list");
-// const citySeach = document.querySelector("#data-search-btn");
-// citySeach.addEventListener("click", findCity);
-// cityList.value = "los angeles";
-
-// async function findCity() {
-//   let cityName = cityList.value
-//     .trim()
-//     .split(" ")
-//     .map(
-//       ([firstChar, ...rest]) =>
-//         firstChar.toUpperCase() + rest.join("").toLowerCase()
-//     )
-//     .join(" ");
-//   const response = await fetch("./city.list.json");
-//   const data = await response.json();
-
-//   let filteredCities = data
-//     .filter((x) => x.name.startsWith(cityName))
-//     //sort by city name first
-//     .sort((a, b) => {
-//       if (a.name < b.name) {
-//         return -1;
-//       }
-//       if (a.name > b.name) {
-//         return 1;
-//       }
-//       //then sort by state
-//       if (a.state < b.state) {
-//         return -1;
-//       }
-//       if (a.name > b.name) {
-//         return 1;
-//       }
-//       return 0;
-//     });
-//   console.log(filteredCities);
-// }
-
 searchInput.value = "Los Angeles, CA";
 
 sortWeatherData(unit);
